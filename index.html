@@ -1,1 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regulatory Burden Dashboard - Uzbekistan 2019-2024</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
+        .stat-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+        .tab-btn { transition: all 0.2s; }
+        .tab-btn.active { background: white; color: #1e3a5f; }
+        .tab-btn:not(.active):hover { background: rgba(255,255,255,0.2); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-8 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold">Regulatory Burden Dashboard</h1>
+                    <p class="mt-2 text-blue-100">Republic of Uzbekistan • 2019-2024</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-blue-200">Data Source</p>
+                    <p class="font-medium">regulation.gov.uz</p>
+                </div>
+            </div>
+            <div class="mt-6 flex flex-wrap gap-2" id="tabs">
+                <button class="tab-btn active px-4 py-2 rounded-lg font-medium text-white bg-white/10" data-tab="overview">Overview</button>
+                <button class="tab-btn px-4 py-2 rounded-lg font-medium text-white bg-white/10" data-tab="trends">Trends</button>
+                <button class="tab-btn px-4 py-2 rounded-lg font-medium text-white bg-white/10" data-tab="sectors">Sectors</button>
+                <button class="tab-btn px-4 py-2 rounded-lg font-medium text-white bg-white/10" data-tab="institutions">Institutions</button>
+                <button class="tab-btn px-4 py-2 rounded-lg font-medium text-white bg-white/10" data-tab="participation">Participation</button>
+            </div>
+        </div>
+    </header>
 
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active space-y-8">
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="card stat-card p-6">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Total Draft Regulations</p>
+                            <p class="mt-2 text-3xl font-bold text-gray-900">5,793</p>
+                            <p class="mt-1 text-sm text-gray-500">Published for consultation</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-blue-50"><span class="text-2xl">📋</span></div>
+                    </div>
+                </div>
+                <div class="card stat-card p-6">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Public Comments</p>
+                            <p class="mt-2 text-3xl font-bold text-gray-900">46,019</p>
+                            <p class="mt-1 text-sm text-gray-500">7.94 avg per draft</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-blue-50"><span class="text-2xl">💬</span></div>
+                    </div>
+                </div>
+                <div class="card stat-card p-6">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Government Bodies</p>
+                            <p class="mt-2 text-3xl font-bold text-gray-900">261</p>
+                            <p class="mt-1 text-sm text-gray-500">Active regulators</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-blue-50"><span class="text-2xl">🏛️</span></div>
+                    </div>
+                </div>
+                <div class="card stat-card p-6">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Zero Engagement Rate</p>
+                            <p class="mt-2 text-3xl font-bold text-gray-900">59%</p>
+                            <p class="mt-1 text-sm text-gray-500">Drafts with no comments</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-red-50"><span class="text-2xl">⚠️</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-1">Regulatory Output by Year</h2>
+                    <p class="text-sm text-gray-500 mb-4">Draft regulations published</p>
+                    <canvas id="yearlyChart"></canvas>
+                </div>
+                <div class="card p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-1">Regulatory Instruments</h2>
+                    <p class="text-sm text-gray-500 mb-4">Distribution by type</p>
+                    <canvas id="typesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Sectors Chart -->
+            <div class="card p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-1">Top Regulatory Sectors</h2>
+                <p class="text-sm text-gray-500 mb-4">Draft regulations by policy area</p>
+                <canvas id="sectorsChart" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Trends Tab -->
+        <div id="trends" class="tab-content space-y-8">
+            <div class="card p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-1">Year-over-Year Change</h2>
+                <p class="text-sm text-gray-500 mb-4">Annual growth rate of regulatory output</p>
+                <canvas id="yoyChart"></canvas>
+            </div>
+            <div class="card p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-1">Monthly Regulatory Output</h2>
+                <p class="text-sm text-gray-500 mb-4">Draft regulations per month</p>
+                <canvas id="monthlyChart" height="100"></canvas>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card p-6 border-l-4 border-blue-900">
+                    <h3 class="font-semibold text-gray-800">Peak Year</h3>
+                    <p class="text-3xl font-bold mt-2 text-blue-900">2019</p>
+                    <p class="text-gray-500 mt-1">1,255 regulations</p>
+                </div>
+                <div class="card p-6 border-l-4 border-green-500">
+                    <h3 class="font-semibold text-gray-800">Total Decline</h3>
+                    <p class="text-3xl font-bold mt-2 text-green-600">-65%</p>
+                    <p class="text-gray-500 mt-1">Since 2019 peak</p>
+                </div>
+                <div class="card p-6 border-l-4 border-amber-500">
+                    <h3 class="font-semibold text-gray-800">2024 Output</h3>
+                    <p class="text-3xl font-bold mt-2 text-amber-600">436</p>
+                    <p class="text-gray-500 mt-1">Draft regulations</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sectors Tab -->
+        <div id="sectors" class="tab-content space-y-8">
+            <div class="card p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-1">All Regulatory Sectors</h2>
+                <p class="text-sm text-gray-500 mb-4">Complete breakdown by policy area</p>
+                <canvas id="sectorsFullChart" height="200"></canvas>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-4xl font-bold text-blue-900">#1</span>
+                        <span class="text-2xl font-bold text-gray-800">1,321</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-700 text-sm">Business</h3>
+                    <div class="mt-3 bg-gray-100 rounded-full h-2">
+                        <div class="h-2 rounded-full bg-blue-900" style="width: 100%"></div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">22.8% of total</p>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-4xl font-bold text-blue-700">#2</span>
+                        <span class="text-2xl font-bold text-gray-800">1,225</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-700 text-sm">Education & Culture</h3>
+                    <div class="mt-3 bg-gray-100 rounded-full h-2">
+                        <div class="h-2 rounded-full bg-blue-700" style="width: 92.7%"></div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">21.1% of total</p>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-4xl font-bold text-blue-500">#3</span>
+                        <span class="text-2xl font-bold text-gray-800">1,009</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-700 text-sm">Ecology</h3>
+                    <div class="mt-3 bg-gray-100 rounded-full h-2">
+                        <div class="h-2 rounded-full bg-blue-500" style="width: 76.4%"></div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">17.4% of total</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Institutions Tab -->
+        <div id="institutions" class="tab-content space-y-8">
+            <div class="card p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-1">Most Active Regulatory Bodies</h2>
+                <p class="text-sm text-gray-500 mb-4">Government institutions by draft regulations</p>
+                <canvas id="developersChart" height="200"></canvas>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card p-6">
+                    <h3 class="font-semibold text-gray-800 mb-2">Total Bodies</h3>
+                    <p class="text-4xl font-bold text-blue-900">261</p>
+                    <p class="text-sm text-gray-500 mt-1">Active regulators</p>
+                </div>
+                <div class="card p-6">
+                    <h3 class="font-semibold text-gray-800 mb-2">Avg. Per Body</h3>
+                    <p class="text-4xl font-bold text-blue-900">22.2</p>
+                    <p class="text-sm text-gray-500 mt-1">Regulations per body</p>
+                </div>
+                <div class="card p-6">
+                    <h3 class="font-semibold text-gray-800 mb-2">Top Body Output</h3>
+                    <p class="text-4xl font-bold text-blue-900">509</p>
+                    <p class="text-sm text-gray-500 mt-1">Most active regulator</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Participation Tab -->
+        <div id="participation" class="tab-content space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="card stat-card p-6">
+                    <p class="text-sm font-medium text-gray-500 uppercase">Total Comments</p>
+                    <p class="mt-2 text-3xl font-bold text-gray-900">46,019</p>
+                </div>
+                <div class="card stat-card p-6">
+                    <p class="text-sm font-medium text-gray-500 uppercase">Average per Draft</p>
+                    <p class="mt-2 text-3xl font-bold text-gray-900">7.94</p>
+                </div>
+                <div class="card stat-card p-6">
+                    <p class="text-sm font-medium text-gray-500 uppercase">Zero Comments</p>
+                    <p class="mt-2 text-3xl font-bold text-gray-900">59%</p>
+                    <p class="mt-1 text-sm text-gray-500">No public input</p>
+                </div>
+                <div class="card stat-card p-6">
+                    <p class="text-sm font-medium text-gray-500 uppercase">Median Comments</p>
+                    <p class="mt-2 text-3xl font-bold text-gray-900">0</p>
+                    <p class="mt-1 text-sm text-gray-500">Most get none</p>
+                </div>
+            </div>
+            <div class="card p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-1">Comment Distribution</h2>
+                <p class="text-sm text-gray-500 mb-4">Regulations by comment count</p>
+                <canvas id="commentsChart"></canvas>
+            </div>
+            <div class="card p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-1">Most Commented Regulations</h2>
+                <p class="text-sm text-gray-500 mb-4">Highest public engagement</p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="text-left py-3 px-4 font-semibold text-gray-600">#</th>
+                                <th class="text-left py-3 px-4 font-semibold text-gray-600">Regulation</th>
+                                <th class="text-left py-3 px-4 font-semibold text-gray-600">Developer</th>
+                                <th class="text-right py-3 px-4 font-semibold text-gray-600">Year</th>
+                                <th class="text-right py-3 px-4 font-semibold text-gray-600">Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4"><span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-white font-bold text-xs bg-blue-900">1</span></td>
+                                <td class="py-3 px-4 text-gray-800">Foreign languages assessment standards</td>
+                                <td class="py-3 px-4 text-gray-600 text-xs">Min. Higher Education</td>
+                                <td class="py-3 px-4 text-right text-gray-600">2024</td>
+                                <td class="py-3 px-4 text-right font-bold text-blue-900">5,398</td>
+                            </tr>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4"><span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-white font-bold text-xs bg-blue-700">2</span></td>
+                                <td class="py-3 px-4 text-gray-800">Teacher requirements in secondary education</td>
+                                <td class="py-3 px-4 text-gray-600 text-xs">Min. Public Education</td>
+                                <td class="py-3 px-4 text-right text-gray-600">2022</td>
+                                <td class="py-3 px-4 text-right font-bold text-blue-900">3,249</td>
+                            </tr>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4"><span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-white font-bold text-xs bg-blue-500">3</span></td>
+                                <td class="py-3 px-4 text-gray-800">National Education Program 2022-2026</td>
+                                <td class="py-3 px-4 text-gray-600 text-xs">Min. Public Education</td>
+                                <td class="py-3 px-4 text-right text-gray-600">2022</td>
+                                <td class="py-3 px-4 text-right font-bold text-blue-900">2,716</td>
+                            </tr>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4"><span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-white font-bold text-xs bg-blue-400">4</span></td>
+                                <td class="py-3 px-4 text-gray-800">Fuel and energy regulation</td>
+                                <td class="py-3 px-4 text-gray-600 text-xs">Min. Finance</td>
+                                <td class="py-3 px-4 text-right text-gray-600">2022</td>
+                                <td class="py-3 px-4 text-right font-bold text-blue-900">1,150</td>
+                            </tr>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4"><span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-white font-bold text-xs bg-blue-300">5</span></td>
+                                <td class="py-3 px-4 text-gray-800">Latin alphabet implementation</td>
+                                <td class="py-3 px-4 text-gray-600 text-xs">Academy of Sciences</td>
+                                <td class="py-3 px-4 text-right text-gray-600">2021</td>
+                                <td class="py-3 px-4 text-right font-bold text-blue-900">1,035</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card p-6 bg-gradient-to-r from-red-50 to-orange-50 border border-red-200">
+                <h3 class="font-bold text-red-800 text-lg mb-3">⚠️ Public Engagement Gap</h3>
+                <p class="text-gray-700 mb-4">Nearly 60% of draft regulations receive zero public comments, indicating significant barriers to civic participation.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-700 mb-2">Potential Causes</h4>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• Limited public awareness</li>
+                            <li>• Technical language barriers</li>
+                            <li>• Short consultation periods</li>
+                            <li>• Perceived lack of impact</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-700 mb-2">Recommendations</h4>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• Proactive notification systems</li>
+                            <li>• Plain language summaries</li>
+                            <li>• Extended comment periods</li>
+                            <li>• Publish response to comments</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-300 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-sm">Regulatory Burden Dashboard • Republic of Uzbekistan • 2019-2024</p>
+            <p class="text-xs mt-2 text-gray-500">Data: regulation.gov.uz • Analysis: January 2025</p>
+        </div>
+    </footer>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Chart colors
+        const colors = {
+            primary: '#1e3a5f',
+            secondary: '#3d6a8c',
+            accent: '#5c9abd',
+            light: '#7bc8e8',
+            lighter: '#9bd5f0',
+            success: '#10b981',
+            danger: '#ef4444'
+        };
+
+        const chartColors = ['#1e3a5f', '#3d6a8c', '#5c9abd', '#7bc8e8', '#9bd5f0', '#2563eb'];
+
+        // Yearly Chart
+        new Chart(document.getElementById('yearlyChart'), {
+            type: 'bar',
+            data: {
+                labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+                datasets: [{
+                    label: 'Regulations',
+                    data: [1255, 1157, 1144, 1165, 636, 436],
+                    backgroundColor: colors.primary,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // Types Pie Chart
+        new Chart(document.getElementById('typesChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Government Resolution', 'Ministry Resolution', 'Law', 'Presidential Resolution', 'Presidential Decree', 'Other'],
+                datasets: [{
+                    data: [2430, 1901, 604, 578, 182, 98],
+                    backgroundColor: chartColors
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // Sectors Chart
+        new Chart(document.getElementById('sectorsChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Business', 'Education & Culture', 'Ecology', 'Banking', 'Labor', 'Foreign Trade', 'Healthcare', 'Housing', 'IT & Digital', 'Social Protection'],
+                datasets: [{
+                    label: 'Regulations',
+                    data: [1321, 1225, 1009, 337, 283, 271, 261, 240, 230, 187],
+                    backgroundColor: colors.primary,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // YoY Chart
+        new Chart(document.getElementById('yoyChart'), {
+            type: 'bar',
+            data: {
+                labels: ['2020', '2021', '2022', '2023', '2024'],
+                datasets: [{
+                    label: 'Change %',
+                    data: [-7.8, -1.1, 1.8, -45.4, -31.4],
+                    backgroundColor: [-7.8, -1.1, 1.8, -45.4, -31.4].map(v => v < 0 ? colors.success : colors.danger),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { ticks: { callback: v => v + '%' } } }
+            }
+        });
+
+        // Monthly Chart
+        const months = ['2019-01','2019-02','2019-03','2019-04','2019-05','2019-06','2019-07','2019-08','2019-09','2019-10','2019-11','2019-12','2020-01','2020-02','2020-03','2020-04','2020-05','2020-06','2020-07','2020-08','2020-09','2020-10','2020-11','2020-12','2021-01','2021-02','2021-03','2021-04','2021-05','2021-06','2021-07','2021-08','2021-09','2021-10','2021-11','2021-12','2022-01','2022-02','2022-03','2022-04','2022-05','2022-06','2022-07','2022-08','2022-09','2022-10','2022-11','2022-12','2023-01','2023-02','2023-03','2023-04','2023-05','2023-06','2023-07','2023-08','2023-09','2023-10','2023-11','2023-12','2024-01','2024-02','2024-03','2024-04','2024-05','2024-06','2024-07','2024-08','2024-09','2024-10','2024-11'];
+        const monthlyData = [80,116,115,95,97,116,165,120,81,99,74,97,100,88,109,72,106,115,68,48,60,110,128,153,108,183,218,37,27,47,48,116,87,86,106,81,79,100,120,104,102,93,94,128,64,99,87,95,59,36,37,56,88,91,57,33,36,42,59,42,46,47,48,61,86,66,48,17,7,9,1];
+        
+        new Chart(document.getElementById('monthlyChart'), {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Regulations',
+                    data: monthlyData,
+                    borderColor: colors.primary,
+                    backgroundColor: colors.accent + '40',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { x: { ticks: { maxTicksLimit: 12 } } }
+            }
+        });
+
+        // Sectors Full Chart
+        new Chart(document.getElementById('sectorsFullChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Business', 'Education & Culture', 'Ecology', 'Banking', 'Labor', 'Foreign Trade', 'Healthcare', 'Housing', 'IT & Digital', 'Social Protection'],
+                datasets: [{
+                    label: 'Regulations',
+                    data: [1321, 1225, 1009, 337, 283, 271, 261, 240, 230, 187],
+                    backgroundColor: colors.primary,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Developers Chart
+        new Chart(document.getElementById('developersChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Min. Poverty Reduction', 'Central Bank', 'Min. Digital Tech', 'Min. Housing', 'Min. Justice', 'Min. Transport', 'Min. Higher Ed', 'Min. Health', 'Min. Finance', 'Min. Culture'],
+                datasets: [{
+                    label: 'Regulations',
+                    data: [509, 320, 287, 256, 230, 186, 171, 159, 155, 145],
+                    backgroundColor: colors.secondary,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Comments Distribution Chart
+        new Chart(document.getElementById('commentsChart'), {
+            type: 'bar',
+            data: {
+                labels: ['0', '1-5', '6-20', '21-100', '101-1000', '1000+'],
+                datasets: [{
+                    label: 'Regulations',
+                    data: [3417, 1537, 539, 235, 60, 5],
+                    backgroundColor: [colors.danger, colors.primary, colors.secondary, colors.accent, colors.light, colors.lighter],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { x: { title: { display: true, text: 'Number of Comments' } } }
+            }
+        });
+    </script>
+</body>
+</html>
