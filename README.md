@@ -4,7 +4,7 @@ An interactive analytical dashboard analyzing **5,793 draft legal acts** publish
 
 ## 🔗 Live Dashboard
 
-[View the Dashboard](https://YOUR-USERNAME.github.io/regulatory-dashboard-uzbekistan/)
+[View the Dashboard](https://kamzay97.github.io/regulatory-dashboard-uzbekistan/)
 
 ## 📊 Key Findings
 
@@ -45,4 +45,4 @@ This analysis is provided for educational and research purposes.
 
 ---
 
-*Generated January 2025*
+*Developed January 2025*
