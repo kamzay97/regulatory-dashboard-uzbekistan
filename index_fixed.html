@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Consultation Practice Dashboard - Uzbekistan 2019-2024</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .gradient-header { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1e40af 100%); }
+        .card { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.05); transition: box-shadow 0.3s; }
+        .card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+        .stat-card { transition: transform 0.3s, box-shadow 0.3s; }
+        .stat-card:hover { transform: translateY(-4px); }
+        .tab-btn { transition: all 0.2s ease; border: 2px solid transparent; }
+        .tab-btn.active { background: white; color: #1e3a5f; border-color: white; }
+        .tab-btn:not(.active):hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .lang-btn { transition: all 0.2s; }
+        .lang-btn.active { background: white; color: #1e3a5f; font-weight: 600; }
+        .lang-btn:not(.active):hover { background: rgba(255,255,255,0.2); }
+        .gradient-text { background: linear-gradient(135deg, #1e3a5f, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .highlight-card { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1px solid #bae6fd; }
+        .warning-card { background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border: 1px solid #fecaca; }
+        .success-card { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #bbf7d0; }
+        .icon-circle { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .progress-bar { height: 8px; border-radius: 4px; background: #e5e7eb; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <header class="gradient-header text-white">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center"><span class="text-xl">📊</span></div>
+                    <div>
+                        <p class="text-xs text-blue-200 uppercase tracking-wider" data-i18n="dataSource">Data Source</p>
+                        <p class="font-semibold">regulation.gov.uz</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1 bg-white/10 rounded-xl p-1">
+                    <button class="lang-btn active px-3 py-1.5 rounded-lg text-sm text-white" data-lang="en">EN</button>
+                    <button class="lang-btn px-3 py-1.5 rounded-lg text-sm text-white" data-lang="ru">RU</button>
+                    <button class="lang-btn px-3 py-1.5 rounded-lg text-sm text-white" data-lang="uz">UZ</button>
+                </div>
+            </div>
+            <div class="text-center py-4">
+                <h1 class="text-3xl md:text-4xl font-bold mb-2" data-i18n="title">Public Consultation Practice Dashboard</h1>
+                <p class="text-blue-200 text-lg" data-i18n="subtitle">Republic of Uzbekistan • 2019-2024</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-2 mt-6" id="tabs">
+                <button class="tab-btn active px-5 py-2.5 rounded-xl font-medium text-white" data-tab="overview" data-i18n="tabOverview">Overview</button>
+                <button class="tab-btn px-5 py-2.5 rounded-xl font-medium text-white" data-tab="trends" data-i18n="tabTrends">Trends</button>
+                <button class="tab-btn px-5 py-2.5 rounded-xl font-medium text-white" data-tab="sectors" data-i18n="tabSectors">Sectors</button>
+                <button class="tab-btn px-5 py-2.5 rounded-xl font-medium text-white" data-tab="institutions" data-i18n="tabInstitutions">Institutions</button>
+                <button class="tab-btn px-5 py-2.5 rounded-xl font-medium text-white" data-tab="participation" data-i18n="tabParticipation">Participation</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-10">
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="card stat-card p-6 highlight-card">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-600 uppercase tracking-wide" data-i18n="totalDrafts">Total Draft Regulations</p>
+                            <p class="mt-3 text-4xl font-bold text-slate-900">5,793</p>
+                            <p class="mt-2 text-sm text-slate-500" data-i18n="publishedFor">Published for consultation</p>
+                        </div>
+                        <div class="icon-circle bg-blue-100 text-blue-600">📋</div>
+                    </div>
+                </div>
+                <div class="card stat-card p-6">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide" data-i18n="publicComments">Public Comments</p>
+                            <p class="mt-3 text-4xl font-bold text-slate-900">46,019</p>
+                            <p class="mt-2 text-sm text-slate-500"><span data-i18n="avgPerDraft">avg per draft</span>: 7.94</p>
+                        </div>
+                        <div class="icon-circle bg-emerald-100 text-emerald-600">💬</div>
+                    </div>
+                </div>
+                <div class="card stat-card p-6">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide" data-i18n="govBodies">Government Bodies</p>
+                            <p class="mt-3 text-4xl font-bold text-slate-900">261</p>
+                            <p class="mt-2 text-sm text-slate-500" data-i18n="activeRegulators">Active regulators</p>
+                        </div>
+                        <div class="icon-circle bg-violet-100 text-violet-600">🏛️</div>
+                    </div>
+                </div>
+                <div class="card stat-card p-6 warning-card">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-red-600 uppercase tracking-wide" data-i18n="zeroEngagement">Zero Engagement Rate</p>
+                            <p class="mt-3 text-4xl font-bold text-slate-900">59%</p>
+                            <p class="mt-2 text-sm text-slate-500" data-i18n="noComments">Drafts with no comments</p>
+                        </div>
+                        <div class="icon-circle bg-red-100 text-red-600">⚠️</div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800" data-i18n="outputByYear">Consultations by Year</h2>
+                            <p class="text-sm text-slate-500 mt-1" data-i18n="draftsPublished">Draft regulations published</p>
+                        </div>
+                        <div class="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-semibold">2019-2024</div>
+                    </div>
+                    <div style="height:280px"><canvas id="yearlyChart"></canvas></div>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800" data-i18n="regInstruments">Regulatory Instruments</h2>
+                            <p class="text-sm text-slate-500 mt-1" data-i18n="distributionByType">Distribution by type</p>
+                        </div>
+                    </div>
+                    <div style="height:280px"><canvas id="typesChart"></canvas></div>
+                </div>
+            </div>
+            <div class="card p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800" data-i18n="topSectors">Top Sectors</h2>
+                        <p class="text-sm text-slate-500 mt-1" data-i18n="byPolicyArea">Draft regulations by policy area</p>
+                    </div>
+                </div>
+                <div style="height:350px"><canvas id="sectorsChart"></canvas></div>
+            </div>
+        </div>
+
+        <!-- Trends Tab -->
+        <div id="trends" class="tab-content space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card p-6 highlight-card">
+                    <div class="flex items-center gap-4">
+                        <div class="icon-circle bg-blue-100 text-blue-600">📈</div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-600 uppercase tracking-wide" data-i18n="peakYear">Peak Year</p>
+                            <p class="mt-1 text-3xl font-bold text-slate-900">2019</p>
+                            <p class="text-sm text-slate-500">1,282 <span data-i18n="drafts">drafts</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card p-6 warning-card">
+                    <div class="flex items-center gap-4">
+                        <div class="icon-circle bg-red-100 text-red-600">📉</div>
+                        <div>
+                            <p class="text-sm font-semibold text-red-600 uppercase tracking-wide" data-i18n="overallDecline">Overall Decline</p>
+                            <p class="mt-1 text-3xl font-bold text-slate-900">-87%</p>
+                            <p class="text-sm text-slate-500" data-i18n="since2019">Since 2019</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card p-6 success-card">
+                    <div class="flex items-center gap-4">
+                        <div class="icon-circle bg-emerald-100 text-emerald-600">💬</div>
+                        <div>
+                            <p class="text-sm font-semibold text-emerald-600 uppercase tracking-wide" data-i18n="avgComments">Avg Comments</p>
+                            <p class="mt-1 text-3xl font-bold text-slate-900">7.94</p>
+                            <p class="text-sm text-slate-500" data-i18n="perDraft">Per draft</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800" data-i18n="yoyChange">Year-over-Year Change</h2>
+                            <p class="text-sm text-slate-500 mt-1" data-i18n="percentChange">Percentage change</p>
+                        </div>
+                    </div>
+                    <div style="height:280px"><canvas id="yoyChart"></canvas></div>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800" data-i18n="monthlyTrend">Monthly Trend</h2>
+                            <p class="text-sm text-slate-500 mt-1" data-i18n="quarterlyAvg">Quarterly averages</p>
+                        </div>
+                    </div>
+                    <div style="height:280px"><canvas id="monthlyChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sectors Tab -->
+        <div id="sectors" class="tab-content space-y-8">
+            <div class="card p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800" data-i18n="topSectors">Top Sectors</h2>
+                        <p class="text-sm text-slate-500 mt-1" data-i18n="byActivity">By regulatory activity</p>
+                    </div>
+                </div>
+                <div style="height:400px"><canvas id="sectorsFullChart"></canvas></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="card p-6">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="icon-circle bg-blue-100 text-blue-600">💼</div>
+                        <div>
+                            <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide" data-i18n="businessReg">Business & Regulation</p>
+                            <p class="text-2xl font-bold text-slate-900">1,321</p>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-blue-500" style="width: 100%"></div>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">22.8% <span data-i18n="ofTotal">of total</span></p>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="icon-circle bg-indigo-100 text-indigo-600">🎓</div>
+                        <div>
+                            <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide" data-i18n="education">Education</p>
+                            <p class="text-2xl font-bold text-slate-900">1,225</p>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-indigo-500" style="width: 92.7%"></div>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">21.1% <span data-i18n="ofTotal">of total</span></p>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="icon-circle bg-emerald-100 text-emerald-600">🌱</div>
+                        <div>
+                            <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide" data-i18n="ecology">Ecology & Environment</p>
+                            <p class="text-2xl font-bold text-slate-900">1,009</p>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-emerald-500" style="width: 76.4%"></div>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">17.4% <span data-i18n="ofTotal">of total</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Institutions Tab -->
+        <div id="institutions" class="tab-content space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="card p-6 highlight-card">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-600 uppercase tracking-wide" data-i18n="totalBodies">Total Bodies</p>
+                            <p class="mt-3 text-4xl font-bold text-slate-900">261</p>
+                            <p class="mt-2 text-sm text-slate-500" data-i18n="agencies">Agencies & ministries</p>
+                        </div>
+                        <div class="icon-circle bg-blue-100 text-blue-600">🏛️</div>
+                    </div>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide" data-i18n="topProducer">Top Producer</p>
+                            <p class="mt-3 text-2xl font-bold text-slate-900">509</p>
+                            <p class="mt-2 text-sm text-slate-500" data-i18n="povertyReduction">Poverty Reduction</p>
+                        </div>
+                        <div class="icon-circle bg-violet-100 text-violet-600">👑</div>
+                    </div>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide" data-i18n="avgOutput">Avg Output</p>
+                            <p class="mt-3 text-4xl font-bold text-slate-900">22.2</p>
+                            <p class="mt-2 text-sm text-slate-500" data-i18n="draftsPerBody">Drafts per body</p>
+                        </div>
+                        <div class="icon-circle bg-amber-100 text-amber-600">📊</div>
+                    </div>
+                </div>
+                <div class="card p-6 warning-card">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-red-600 uppercase tracking-wide" data-i18n="concentration">Concentration</p>
+                            <p class="mt-3 text-4xl font-bold text-slate-900">44%</p>
+                            <p class="mt-2 text-sm text-slate-500" data-i18n="top10Bodies">Top 10 bodies</p>
+                        </div>
+                        <div class="icon-circle bg-red-100 text-red-600">⚠️</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800" data-i18n="topDevelopers">Top Regulatory Developers</h2>
+                        <p class="text-sm text-slate-500 mt-1" data-i18n="mostActive">Most active institutions</p>
+                    </div>
+                </div>
+                <div style="height:400px"><canvas id="developersChart"></canvas></div>
+            </div>
+        </div>
+
+        <!-- Participation Tab -->
+        <div id="participation" class="tab-content space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="card p-6 highlight-card">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-600 uppercase tracking-wide" data-i18n="totalComments">Total Comments</p>
+                            <p class="mt-3 text-4xl font-bold text-slate-900">46,019</p>
+                            <p class="mt-2 text-sm text-slate-500" data-i18n="submitted">Submitted</p>
+                        </div>
+                        <div class="icon-circle bg-blue-100 text-blue-600">💬</div>
+                    </div>
+                </div>
+                <div class="card p-6 warning-card">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-red-600 uppercase tracking-wide" data-i18n="noDrafts">No Comment Drafts</p>
+                            <p class="mt-3 text-4xl font-bold text-slate-900">3,417</p>
+                            <p class="mt-2 text-sm text-slate-500">59% <span data-i18n="ofTotal">of total</span></p>
+                        </div>
+                        <div class="icon-circle bg-red-100 text-red-600">❌</div>
+                    </div>
+                </div>
+                <div class="card p-6 success-card">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-emerald-600 uppercase tracking-wide" data-i18n="highEngagement">High Engagement</p>
+                            <p class="mt-3 text-4xl font-bold text-slate-900">65</p>
+                            <p class="mt-2 text-sm text-slate-500">100+ <span data-i18n="comments">comments</span></p>
+                        </div>
+                        <div class="icon-circle bg-emerald-100 text-emerald-600">✨</div>
+                    </div>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide" data-i18n="median">Median</p>
+                            <p class="mt-3 text-4xl font-bold text-slate-900">0</p>
+                            <p class="mt-2 text-sm text-slate-500" data-i18n="commentsPerDraft">Comments per draft</p>
+                        </div>
+                        <div class="icon-circle bg-slate-100 text-slate-600">📊</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800" data-i18n="engagementDist">Engagement Distribution</h2>
+                        <p class="text-sm text-slate-500 mt-1" data-i18n="draftsByComments">Drafts by comment count</p>
+                    </div>
+                </div>
+                <div style="height:350px"><canvas id="commentsChart"></canvas></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-slate-800" data-i18n="lowEngagement">Low Engagement</h3>
+                        <span class="px-2 py-1 bg-red-50 text-red-600 rounded text-xs font-semibold">0-5</span>
+                    </div>
+                    <p class="text-3xl font-bold text-slate-900">4,954</p>
+                    <p class="text-sm text-slate-500 mt-1">85.5% <span data-i18n="ofDrafts">of drafts</span></p>
+                    <div class="progress-bar mt-4">
+                        <div class="progress-fill bg-red-500" style="width: 85.5%"></div>
+                    </div>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-slate-800" data-i18n="mediumEngagement">Medium Engagement</h3>
+                        <span class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs font-semibold">6-100</span>
+                    </div>
+                    <p class="text-3xl font-bold text-slate-900">774</p>
+                    <p class="text-sm text-slate-500 mt-1">13.4% <span data-i18n="ofDrafts">of drafts</span></p>
+                    <div class="progress-bar mt-4">
+                        <div class="progress-fill bg-blue-500" style="width: 13.4%"></div>
+                    </div>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-slate-800" data-i18n="highEngagement">High Engagement</h3>
+                        <span class="px-2 py-1 bg-emerald-50 text-emerald-600 rounded text-xs font-semibold">100+</span>
+                    </div>
+                    <p class="text-3xl font-bold text-slate-900">65</p>
+                    <p class="text-sm text-slate-500 mt-1">1.1% <span data-i18n="ofDrafts">of drafts</span></p>
+                    <div class="progress-bar mt-4">
+                        <div class="progress-fill bg-emerald-500" style="width: 1.1%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Translations object
+        const translations = {
+            en: {
+                dataSource: "Data Source",
+                title: "Public Consultation Practice Dashboard",
+                subtitle: "Republic of Uzbekistan • 2019-2024",
+                tabOverview: "Overview",
+                tabTrends: "Trends",
+                tabSectors: "Sectors",
+                tabInstitutions: "Institutions",
+                tabParticipation: "Participation",
+                totalDrafts: "Total Draft Regulations",
+                publishedFor: "Published for consultation",
+                publicComments: "Public Comments",
+                avgPerDraft: "avg per draft",
+                govBodies: "Government Bodies",
+                activeRegulators: "Active regulators",
+                zeroEngagement: "Zero Engagement Rate",
+                noComments: "Drafts with no comments",
+                outputByYear: "Consultations by Year",
+                draftsPublished: "Draft regulations published",
+                regInstruments: "Regulatory Instruments",
+                distributionByType: "Distribution by type",
+                topSectors: "Top Sectors",
+                byPolicyArea: "Draft regulations by policy area",
+                peakYear: "Peak Year",
+                drafts: "drafts",
+                overallDecline: "Overall Decline",
+                since2019: "Since 2019",
+                avgComments: "Avg Comments",
+                perDraft: "Per draft",
+                yoyChange: "Year-over-Year Change",
+                percentChange: "Percentage change",
+                monthlyTrend: "Monthly Trend",
+                quarterlyAvg: "Quarterly averages",
+                byActivity: "By regulatory activity",
+                businessReg: "Business & Regulation",
+                ofTotal: "of total",
+                education: "Education",
+                ecology: "Ecology & Environment",
+                totalBodies: "Total Bodies",
+                agencies: "Agencies & ministries",
+                topProducer: "Top Producer",
+                povertyReduction: "Poverty Reduction",
+                avgOutput: "Avg Output",
+                draftsPerBody: "Drafts per body",
+                concentration: "Concentration",
+                top10Bodies: "Top 10 bodies",
+                topDevelopers: "Top Regulatory Developers",
+                mostActive: "Most active institutions",
+                totalComments: "Total Comments",
+                submitted: "Submitted",
+                noDrafts: "No Comment Drafts",
+                highEngagement: "High Engagement",
+                comments: "comments",
+                median: "Median",
+                commentsPerDraft: "Comments per draft",
+                engagementDist: "Engagement Distribution",
+                draftsByComments: "Drafts by comment count",
+                lowEngagement: "Low Engagement",
+                ofDrafts: "of drafts",
+                mediumEngagement: "Medium Engagement"
+            },
+            ru: {
+                dataSource: "Источник данных",
+                title: "Панель публичных консультаций",
+                subtitle: "Республика Узбекистан • 2019-2024",
+                tabOverview: "Обзор",
+                tabTrends: "Тренды",
+                tabSectors: "Сектора",
+                tabInstitutions: "Учреждения",
+                tabParticipation: "Участие",
+                totalDrafts: "Всего проектов НПА",
+                publishedFor: "Опубликовано для консультаций",
+                publicComments: "Публичные комментарии",
+                avgPerDraft: "в среднем на проект",
+                govBodies: "Госорганы",
+                activeRegulators: "Активные регуляторы",
+                zeroEngagement: "Уровень нулевого участия",
+                noComments: "Проекты без комментариев",
+                outputByYear: "Консультации по годам",
+                draftsPublished: "Опубликованные проекты НПА",
+                regInstruments: "Регуляторные инструменты",
+                distributionByType: "Распределение по типу",
+                topSectors: "Топ секторов",
+                byPolicyArea: "Проекты НПА по сферам политики",
+                peakYear: "Пиковый год",
+                drafts: "проектов",
+                overallDecline: "Общее снижение",
+                since2019: "С 2019 года",
+                avgComments: "Средн. комментарии",
+                perDraft: "На проект",
+                yoyChange: "Изменение год к году",
+                percentChange: "Процентное изменение",
+                monthlyTrend: "Месячный тренд",
+                quarterlyAvg: "Квартальные средние",
+                byActivity: "По регуляторной активности",
+                businessReg: "Бизнес и регулирование",
+                ofTotal: "от общего",
+                education: "Образование",
+                ecology: "Экология и окружающая среда",
+                totalBodies: "Всего органов",
+                agencies: "Агентства и министерства",
+                topProducer: "Топ производитель",
+                povertyReduction: "Борьба с бедностью",
+                avgOutput: "Средн. результат",
+                draftsPerBody: "Проектов на орган",
+                concentration: "Концентрация",
+                top10Bodies: "Топ 10 органов",
+                topDevelopers: "Топ разработчиков НПА",
+                mostActive: "Наиболее активные учреждения",
+                totalComments: "Всего комментариев",
+                submitted: "Подано",
+                noDrafts: "Проекты без комментариев",
+                highEngagement: "Высокое участие",
+                comments: "комментарии",
+                median: "Медиана",
+                commentsPerDraft: "Комментариев на проект",
+                engagementDist: "Распределение участия",
+                draftsByComments: "Проекты по количеству комментариев",
+                lowEngagement: "Низкое участие",
+                ofDrafts: "проектов",
+                mediumEngagement: "Среднее участие"
+            },
+            uz: {
+                dataSource: "Ma'lumot manbai",
+                title: "Jamoatchilik maslahatlari paneli",
+                subtitle: "O'zbekiston Respublikasi • 2019-2024",
+                tabOverview: "Umumiy ko'rinish",
+                tabTrends: "Tendensiyalar",
+                tabSectors: "Sohalar",
+                tabInstitutions: "Muassasalar",
+                tabParticipation: "Ishtirok",
+                totalDrafts: "Jami HHT loyihalari",
+                publishedFor: "Maslahat uchun e'lon qilingan",
+                publicComments: "Jamoatchilik fikrlari",
+                avgPerDraft: "o'rtacha har bir loyiha",
+                govBodies: "Davlat organlari",
+                activeRegulators: "Faol tartibga soluvchilar",
+                zeroEngagement: "Nol ishtirok darajasi",
+                noComments: "Sharhlarsiz loyihalar",
+                outputByYear: "Yillar bo'yicha maslahatlar",
+                draftsPublished: "E'lon qilingan HHT loyihalari",
+                regInstruments: "Tartibga solish vositalari",
+                distributionByType: "Turlar bo'yicha taqsimot",
+                topSectors: "Eng yaxshi sohalar",
+                byPolicyArea: "Siyosat sohalari bo'yicha HHT loyihalari",
+                peakYear: "Eng yuqori yil",
+                drafts: "loyihalar",
+                overallDecline: "Umumiy pasayish",
+                since2019: "2019 yildan beri",
+                avgComments: "O'rtacha sharhlar",
+                perDraft: "Har bir loyiha",
+                yoyChange: "Yilma-yil o'zgarish",
+                percentChange: "Foiz o'zgarishi",
+                monthlyTrend: "Oylik tendensiya",
+                quarterlyAvg: "Choraklik o'rtacha",
+                byActivity: "Tartibga solish faolligi bo'yicha",
+                businessReg: "Biznes va tartibga solish",
+                ofTotal: "umumiydan",
+                education: "Ta'lim",
+                ecology: "Ekologiya va atrof-muhit",
+                totalBodies: "Jami organlar",
+                agencies: "Agentliklar va vazirliklar",
+                topProducer: "Eng yaxshi ishlab chiqaruvchi",
+                povertyReduction: "Qashshoqlikka qarshi kurash",
+                avgOutput: "O'rtacha natija",
+                draftsPerBody: "Har bir organ uchun loyihalar",
+                concentration: "Konsentratsiya",
+                top10Bodies: "Top 10 organlar",
+                topDevelopers: "Eng yaxshi HHT ishlab chiquvchilar",
+                mostActive: "Eng faol muassasalar",
+                totalComments: "Jami sharhlar",
+                submitted: "Yuborilgan",
+                noDrafts: "Sharhlarsiz loyihalar",
+                highEngagement: "Yuqori ishtirok",
+                comments: "sharhlar",
+                median: "Mediana",
+                commentsPerDraft: "Har bir loyiha uchun sharhlar",
+                engagementDist: "Ishtirok taqsimoti",
+                draftsByComments: "Sharhlar soni bo'yicha loyihalar",
+                lowEngagement: "Past ishtirok",
+                ofDrafts: "loyihalar",
+                mediumEngagement: "O'rtacha ishtirok"
+            }
+        };
+
+        // Apply translations
+        function applyTranslations(lang) {
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.getAttribute('data-tab');
+                
+                // Update active tab button
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Update active tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(tabName).classList.add('active');
+            });
+        });
+
+        // Language switching
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.getAttribute('data-lang');
+                
+                // Update active language button
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Apply translations
+                applyTranslations(lang);
+            });
+        });
+
+        // Charts
+        // Yearly Chart
+        new Chart(document.getElementById("yearlyChart"), {
+            type: "bar",
+            data: {
+                labels: ["2019","2020","2021","2022","2023","2024"],
+                datasets: [{
+                    data: [1282,1182,1169,1190,649,321],
+                    backgroundColor: "rgba(30,58,95,0.85)",
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                animation: false,
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: "#f1f5f9" } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Types Chart
+        new Chart(document.getElementById("typesChart"), {
+            type: "doughnut",
+            data: {
+                labels: ["Presidential Decrees","Gov Resolutions","Cabinet Decisions","Agency Orders","Other"],
+                datasets: [{
+                    data: [1850,2314,892,465,272],
+                    backgroundColor: ["#1e3a5f","#3b5f8f","#5a7fa3","#7a9fb8","#a0c4d8"],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                animation: false,
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: "bottom", labels: { padding: 15, font: { size: 11 } } }
+                }
+            }
+        });
+
+        // Sectors Chart
+        new Chart(document.getElementById("sectorsChart"), {
+            type: "bar",
+            data: {
+                labels: ["Business","Education","Ecology","Banking","Labor","Trade","Healthcare","Housing","IT","Social"],
+                datasets: [{
+                    data: [1321,1225,1009,337,283,271,261,240,230,187],
+                    backgroundColor: ["rgba(30,58,95,1)","rgba(30,58,95,0.92)","rgba(30,58,95,0.84)","rgba(30,58,95,0.76)","rgba(30,58,95,0.68)","rgba(30,58,95,0.60)","rgba(30,58,95,0.52)","rgba(30,58,95,0.44)","rgba(30,58,95,0.36)","rgba(30,58,95,0.28)"],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                animation: false,
+                indexAxis: "y",
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { color: "#f1f5f9" } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+
+        // YoY Chart
+        new Chart(document.getElementById("yoyChart"), {
+            type: "bar",
+            data: {
+                labels: ["2020","2021","2022","2023","2024"],
+                datasets: [{
+                    data: [-7.8,-1.1,1.8,-45.4,-50.5],
+                    backgroundColor: ["rgba(239,68,68,0.8)","rgba(239,68,68,0.8)","rgba(16,185,129,0.8)","rgba(239,68,68,0.8)","rgba(239,68,68,0.8)"],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                animation: false,
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { ticks: { callback: function(v) { return v + "%"; } }, grid: { color: "#f1f5f9" } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Monthly Chart
+        new Chart(document.getElementById("monthlyChart"), {
+            type: "line",
+            data: {
+                labels: ["2019-01","2019-04","2019-07","2019-10","2020-01","2020-04","2020-07","2020-10","2021-01","2021-04","2021-07","2021-10","2022-01","2022-04","2022-07","2022-10","2023-01","2023-04","2023-07","2023-10","2024-01","2024-04","2024-07","2024-10"],
+                datasets: [{
+                    data: [80,95,165,99,100,72,68,110,108,37,48,86,79,104,94,99,59,56,57,42,46,61,48,9],
+                    borderColor: "#1e3a5f",
+                    backgroundColor: "rgba(30,58,95,0.1)",
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 3,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                animation: false,
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { grid: { color: "#f1f5f9" } }
+                }
+            }
+        });
+
+        // Sectors Full Chart
+        new Chart(document.getElementById("sectorsFullChart"), {
+            type: "bar",
+            data: {
+                labels: ["Business","Education","Ecology","Banking","Labor","Trade","Healthcare","Housing","IT","Social"],
+                datasets: [{
+                    data: [1321,1225,1009,337,283,271,261,240,230,187],
+                    backgroundColor: ["rgba(30,58,95,1)","rgba(30,58,95,0.92)","rgba(30,58,95,0.84)","rgba(30,58,95,0.76)","rgba(30,58,95,0.68)","rgba(30,58,95,0.60)","rgba(30,58,95,0.52)","rgba(30,58,95,0.44)","rgba(30,58,95,0.36)","rgba(30,58,95,0.28)"],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                animation: false,
+                indexAxis: "y",
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { color: "#f1f5f9" } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Developers Chart
+        new Chart(document.getElementById("developersChart"), {
+            type: "bar",
+            data: {
+                labels: ["Poverty Reduction","Central Bank","Digital Tech","Housing","Justice","Transport","Higher Ed","Health","Finance","Culture"],
+                datasets: [{
+                    data: [509,320,287,256,230,186,171,159,155,145],
+                    backgroundColor: ["rgba(61,106,140,1)","rgba(61,106,140,0.92)","rgba(61,106,140,0.84)","rgba(61,106,140,0.76)","rgba(61,106,140,0.68)","rgba(61,106,140,0.60)","rgba(61,106,140,0.52)","rgba(61,106,140,0.44)","rgba(61,106,140,0.36)","rgba(61,106,140,0.28)"],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                animation: false,
+                indexAxis: "y",
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { color: "#f1f5f9" } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Comments Chart
+        new Chart(document.getElementById("commentsChart"), {
+            type: "bar",
+            data: {
+                labels: ["0","1-5","6-20","21-100","101-1000","1000+"],
+                datasets: [{
+                    data: [3417,1537,539,235,60,5],
+                    backgroundColor: ["rgba(239,68,68,0.8)","rgba(30,58,95,0.9)","rgba(30,58,95,0.7)","rgba(30,58,95,0.5)","rgba(30,58,95,0.35)","rgba(30,58,95,0.2)"],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                animation: false,
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: "#f1f5f9" } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Initialize with English
+        applyTranslations("en");
+    </script>
+</body>
+</html>
