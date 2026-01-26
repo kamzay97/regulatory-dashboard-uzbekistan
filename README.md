@@ -1,4 +1,4 @@
-# Regulatory Burden Dashboard — Republic of Uzbekistan (2019-2024)
+# Regulatory Burden Dashboard - Republic of Uzbekistan (2019-2024)
 
 An interactive analytical dashboard analyzing **5,793 draft legal acts** published for public consultation on Uzbekistan's regulation.gov.uz portal.
 
